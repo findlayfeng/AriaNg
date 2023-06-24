@@ -134,6 +134,31 @@
             return ariaNgConstants.defaultHost;
         };
 
+        var getDefaultRpcProtocol = function () {
+            if (isInsecureProtocolDisabled()) {
+                return ariaNgConstants.defaultSecureProtocol;
+            }
+
+            return "http";
+        }
+
+        var getDefaultRpcPort = function () {
+            var currentPort = window.location.port;
+
+            if (currentPort) {
+                return currentPort;
+            }
+
+            switch  (getDefaultRpcProtocol()) {
+                case "https":
+                    return "443";
+                case "http":
+                    return "80";
+                default:
+                    return "6800";
+            }
+        }
+
         var setOptions = function (options) {
             return ariaNgStorageService.set(ariaNgConstants.optionStorageKey, options);
         };
@@ -194,10 +219,8 @@
 
         var initRpcSettingWithDefaultHostAndProtocol = function (setting) {
             setting.rpcHost = getDefaultRpcHost();
-
-            if (isInsecureProtocolDisabled()) {
-                setting.protocol = ariaNgConstants.defaultSecureProtocol;
-            }
+            setting.rpcPort= getDefaultRpcPort();
+            setting.protocol = getDefaultRpcProtocol();
         };
 
         var cloneRpcSetting = function (setting) {
